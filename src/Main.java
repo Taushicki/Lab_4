@@ -9,6 +9,7 @@ public class Main {
 
         TextHandler someText = new TextHandler("temp.txt");
         someText.changeCase(true);
+        someText.countingWords();
 
 
     }
