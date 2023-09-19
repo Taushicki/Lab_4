@@ -1,50 +1,57 @@
 import java.io.IOException;
 import java.io.*;
-import java.util.Iterator;
 
 public class TextHandler {
-    private final String filePath;
-    private String stringFromBuilder;
-    private int countingWordInFile;
+    private final String inputFileName;
+    private final String outputFileName;
 
-    public TextHandler(String filePath) {
-        this.filePath = filePath;
-        getTextFromFile();
-    }
-
-    private void getTextFromFile() {
-        StringBuilder textFromFile = new StringBuilder();
-        try (FileInputStream fin = new FileInputStream(filePath)) {
-            int iterator;
-            while ((iterator = fin.read()) != -1) {
-                textFromFile.append((char) iterator);
-            }
-            stringFromBuilder = textFromFile.toString();
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-
+    public TextHandler(String inputFileName, String outputFileName) {
+        this.inputFileName = inputFileName;
+        this.outputFileName = outputFileName;
     }
 
     public void changeCase(boolean toUpperCase) {
-        byte[] buffer = (toUpperCase ? stringFromBuilder.toUpperCase() : stringFromBuilder.toLowerCase()).getBytes();
-        try (FileOutputStream fos = new FileOutputStream(filePath)) {
-            fos.write(buffer);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
 
-    public void countingWords() {
-        for (String stringFromText : stringFromBuilder.split("\n")) {
-            if (!stringFromText.isEmpty()) {
-                countingWordInFile += stringFromText.split(" ").length;
+            String lineFromTextFile;
+            while ((lineFromTextFile = reader.readLine()) != null) {
+                writer.write(toUpperCase ? lineFromTextFile.toUpperCase() : lineFromTextFile.toLowerCase());
+                writer.newLine();
             }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
-        System.out.println(countingWordInFile);
     }
 
-    public void countingSymbolInWord() {
+    public void countWords() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
 
+            String lineFromTextFile;
+            int wordCountInFile = 0;
+            while ((lineFromTextFile = reader.readLine()) != null) {
+                wordCountInFile += (!lineFromTextFile.isEmpty()) ? lineFromTextFile.split(" ").length : 0;
+            }
+            writer.write(String.valueOf(wordCountInFile));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void countCharactersPerWord() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
+
+            String lineFromTextFile;
+            while ((lineFromTextFile = reader.readLine()) != null) {
+                for (String wordFromLine : lineFromTextFile.split(" ")) {
+                    writer.write(String.valueOf(wordFromLine.length()));
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
